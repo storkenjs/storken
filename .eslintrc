@@ -1,0 +1,13 @@
+{
+	"extends": "standard",
+  "parser": "babel-eslint",
+	"env": {
+		"browser": true
+	},
+	"rules": {
+		"indent": [1],
+		"space-before-function-paren": [1],
+		"space-before-blocks": [1]
+	}
+}
+
