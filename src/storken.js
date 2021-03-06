@@ -71,7 +71,9 @@ export class Storken {
     )
       .then(getterValue => {
         this.dispatchEvent('getted', getterValue, ...args)
-        this.set(getterValue, { force: true, disableSetter: this.opts?.disableSetterOnGetter || true })
+        if (getterValue) {
+          this.set(getterValue, { force: true, disableSetter: this.opts?.disableSetterOnGetter || true })
+        }
         this.load(false)
         return getterValue
       })
@@ -139,8 +141,8 @@ export class Storken {
       Promise.resolve(
         typeof this.opts.setter === 'function'
           ? typeof this.opts.setter?.then === 'function'
-              ? await this.opts.setter(this, ...this?.args)
-              : this.opts.setter(this, ...this?.args)
+            ? await this.opts.setter(this, ...this?.args)
+            : this.opts.setter(this, ...this?.args)
           : this.opts.setter
       )
         .then(() => { this.load(false) })
