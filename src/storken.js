@@ -96,7 +96,7 @@ export class Storken {
     if (value !== this.value) { listener(this.value) }
     if (loading !== this.loading) { loadingListener(this.loading) }
 
-    if (!this.getted && !this.opts?.disableAutoGetter) {
+    if (!this.getted || !this.opts?.disableAutoGetter) {
       this.setFromGetter(...args)
     }
 
@@ -108,7 +108,7 @@ export class Storken {
       delete stork.loadingListeners?.[stork.loadingListeners.indexOf(loadingListener)]
       stork.listeners = stork.listeners.filter(Boolean)
       stork.loadingListeners = stork.loadingListeners.filter(Boolean)
-      if (!stork.opts?.getOnce && !stork.getted) {
+      if (stork.opts?.getOnce && !stork.getted) {
         stork.getted = true
       }
       stork.dispatchEvent('unmounted')

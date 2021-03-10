@@ -4,11 +4,11 @@
   "prepublishOnly": "yarn build"
  },
  "repository": {
-   "url": "https://github.com/storkenjs/storken",
-   "type": "git"
+  "url": "https://github.com/storkenjs/storken",
+  "type": "git"
  },
  "name": "storken",
- "version": "2.0.3",
+ "version": "2.0.4",
  "description": "Storken is a hook-based fully extendable and minimal state manager for React.",
  "author": "Kerem Noras <kerem@noras.tech>",
  "main": "dist/storken.js",
