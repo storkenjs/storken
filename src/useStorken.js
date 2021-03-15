@@ -17,7 +17,7 @@ export const createHook = (Sky) =>
     returnPack.update = stork.update
 
     const plugins = stork.loadPlugins(returnPack)
-    returnPack.concat(plugins)
+    returnPack.push(plugins)
     returnPack.plugins = plugins
 
     return returnPack
