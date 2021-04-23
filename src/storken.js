@@ -198,6 +198,16 @@ export class Sky {
 
   getStorken = (key, ...args) => this.get(key, args, true)
 
+  getPlugin = (key, plugin) => {
+    const stork = this.get(key, null, true)
+
+    if (plugin) {
+      return stork.plugins[plugin]
+    }
+
+    return stork.plugins
+  }
+
   set = (key, value, ...args) => {
     if (!this.bundles?.[key]) {
       this.create(key, ...args)
