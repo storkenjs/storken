@@ -25,7 +25,7 @@ export class Storken {
     }
   }
 
-  addEventListener = (name, func) => {
+  on = (name, func) => {
     if (!this?.eventListeners) {
       this.eventListeners = {}
     }

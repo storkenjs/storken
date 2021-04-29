@@ -8,7 +8,7 @@
   "type": "git"
  },
  "name": "storken",
- "version": "2.0.6",
+ "version": "2.0.7",
  "description": "Storken is a hook-based fully extendable and minimal state manager for React.",
  "author": "Kerem Noras <kerem@noras.tech>",
  "main": "dist/storken.js",
