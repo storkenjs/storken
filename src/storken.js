@@ -96,7 +96,7 @@ export class Storken {
     if (value !== this.value) { listener(this.value) }
     if (loading !== this.loading) { loadingListener(this.loading) }
 
-    if (!this.getted || !this.opts?.disableAutoGetter) {
+    if (!this.opts?.disableAutoGetter && !this.getted) {
       this.setFromGetter(...args)
     }
 
