@@ -1,13 +1,30 @@
 import { createHook } from './useStorken'
 
+
+
+
 export class Storken {
-  constructor ({ key, args, plugins, ...opts }, Sky) {
+
+  /**
+   * 
+   * @param {Object} options
+   * @param {string} options.key
+   * @param {any[]} options.args
+   * @param {any[]} options.plugins
+   * @param {string=} options.namespace
+   * @param {string=} options.initialValue
+   * 
+   * @param {*} Sky 
+   */
+
+  constructor ({ key, args, plugins,...opts }, Sky) {
     this.id = Date.now()
     this.key = key
     this.opts = opts
     this.args = [...args]
     this.value = opts?.initialValue
     this.Store = Sky
+  
     this.namespace = opts?.namespace || 'storken::'
 
     this.listeners = []
@@ -25,6 +42,11 @@ export class Storken {
     }
   }
 
+  /**
+   * 
+   * @param {string} name
+   * @param {Function} func 
+   */
   on = (name, func) => {
     if (!this?.eventListeners) {
       this.eventListeners = {}
@@ -37,12 +59,19 @@ export class Storken {
     }
   }
 
+  /**
+   * 
+   * @param {string} name 
+   * @param  {...any} args 
+   * @returns {PromiseLike<any>}
+   */
   dispatchEvent = async (name, ...args) => {
     if (!this?.eventListeners?.[name]) { return undefined }
     for (const func of this.eventListeners[name]) {
       await func(...args)
     }
   }
+
 
   loadPlugins = (returnPack) => {
     const { plugins } = this
