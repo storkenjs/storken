@@ -208,9 +208,7 @@ export class Storken {
           : this.opts.setter
       )
         .then((result) => {
-          if (this.opts?.setWithSetter) {
-            setRoot(result)
-          }
+          setRoot(this.opts?.setWithSetter ? result : val)
           this.load(false)
         })
     } else {
