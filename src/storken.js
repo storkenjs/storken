@@ -97,25 +97,26 @@ export class Storken {
    * @param {...*} args - arguments for the getter function.
    * @returns {Promise*} Output of the getter function.
    */
-  setFromGetter = (...args) => {
+  setFromGetter = async (...args) => {
     if (!this.opts?.getter) { return }
     if (this.opts?.disableGetterOnLoading && this.loading) { return Promise.resolve(this.value) }
     this.load(true)
     this.dispatchEvent('getting', ...args)
 
-    return Promise.resolve(
+    const getterValue = await Promise.resolve(
       typeof this.opts.getter === 'function'
         ? this.opts.getter(this, ...args)
         : this.opts.getter
     )
-      .then(getterValue => {
-        this.dispatchEvent('getted', getterValue, ...args)
-        if (getterValue) {
-          this.set(getterValue, { force: true, disableSetter: this.opts?.disableSetterOnGetter || true })
-        }
-        this.load(false)
-        return getterValue
+    this.dispatchEvent('getted', getterValue, ...args)
+    if (getterValue) {
+      this.set(getterValue, {
+        force: true,
+        disableSetter: this.opts?.disableSetterOnGetter || true
       })
+    }
+    this.load(false)
+    return getterValue
   }
 
   /**
@@ -191,21 +192,29 @@ export class Storken {
 
     if (this.value === val && !opts?.force) { return }
 
-    this.value = val
-
-    this.updateListeners(val)
-    this.dispatchEvent('set', this.value, this?.args, opts)
+    const setRoot = (value) => {
+      this.value = value
+      this.updateListeners(value)
+      this.dispatchEvent('set', value, this?.args, opts)
+    }
 
     if (typeof this.opts?.setter === 'function' && !opts?.disableSetter) {
       this.load(null)
       Promise.resolve(
         typeof this.opts.setter === 'function'
           ? typeof this.opts.setter?.then === 'function'
-            ? await this.opts.setter(this, ...this?.args)
-            : this.opts.setter(this, ...this?.args)
+            ? await this.opts.setter(this, val, ...this?.args)
+            : this.opts.setter(this, val, ...this?.args)
           : this.opts.setter
       )
-        .then(() => { this.load(false) })
+        .then((result) => {
+          if (this.opts?.setWithSetter) {
+            setRoot(result)
+          }
+          this.load(false)
+        })
+    } else {
+      setRoot(val)
     }
   }
 

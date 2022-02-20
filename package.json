@@ -1,38 +1,38 @@
 {
- "scripts": {
-  "build": "babel src/* --ignore '**/*.test.js' --out-dir dist -d",
-  "prepublishOnly": "yarn build"
- },
- "repository": {
-  "url": "https://github.com/storkenjs/storken",
-  "type": "git"
- },
- "name": "storken",
- "version": "2.0.9",
- "description": "Storken is a hook-based fully extendable and minimal state manager for React.",
- "author": "Kerem Noras <kerem@noras.tech>",
- "main": "dist/storken.js",
- "license": "MIT",
- "devDependencies": {
-  "@babel/cli": "^7.8.4",
-  "@babel/core": "^7.9.6",
-  "@babel/plugin-proposal-class-properties": "^7.10.4",
-  "@babel/plugin-transform-modules-commonjs": "^7.9.6",
-  "@babel/plugin-transform-runtime": "^7.9.6",
-  "@babel/preset-env": "^7.9.6",
-  "@babel/preset-react": "^7.9.4",
-  "babel-eslint": "^10.1.0",
-  "babel-plugin-loop-optimizer": "^1.4.1",
-  "babel-preset-minify": "^0.5.1",
-  "eslint": "^7.0.0",
-  "eslint-config-standard": "^14.1.1",
-  "eslint-config-standard-react": "^9.2.0",
-  "eslint-plugin-import": "^2.20.2",
-  "eslint-plugin-node": "^11.1.0",
-  "eslint-plugin-promise": "^4.2.1",
-  "eslint-plugin-react": "^7.20.0",
-  "eslint-plugin-standard": "^4.0.1",
-  "jest": "^26.2.2",
-  "react": "^16.13.1"
- }
+  "scripts": {
+    "build": "babel src/* --ignore '**/*.test.js' --out-dir dist -d",
+    "prepublishOnly": "yarn build"
+  },
+  "repository": {
+    "url": "https://github.com/storkenjs/storken",
+    "type": "git"
+  },
+  "name": "storken",
+  "version": "2.0.10",
+  "description": "Hook based extendable minimal state manager for React.",
+  "author": "Kerem Noras <kerem@noras.tech>",
+  "main": "dist/storken.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.6",
+    "@babel/plugin-transform-runtime": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-loop-optimizer": "^1.4.1",
+    "babel-preset-minify": "^0.5.1",
+    "eslint": "^7.0.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-config-standard-react": "^9.2.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^26.2.2",
+    "react": "^16.13.1"
+  }
 }
