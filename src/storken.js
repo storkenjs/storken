@@ -83,10 +83,7 @@ export class Storken {
 
     return Object.keys(plugins)?.reduce((obj, key) => {
       let cb = plugins[key]
-      if (cb instanceof Function) {
-        cb = cb(returnPack)
-      }
-
+      cb = cb instanceof Function && cb(returnPack)
       obj[key] = cb
       return obj
     }, {})
