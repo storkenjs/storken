@@ -1,14 +1,16 @@
 {
   "scripts": {
-    "build": "babel src/* --ignore '**/*.test.js' --out-dir dist -d",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "build": "yarn build:esm && yarn build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs"
   },
   "repository": {
     "url": "https://github.com/storkenjs/storken",
     "type": "git"
   },
   "name": "storken",
-  "version": "2.0.11",
+  "version": "2.1.0",
   "description": "Hook based extendable minimal state manager for React.",
   "keywords": [
     "state",
@@ -25,28 +27,46 @@
     "setter"
   ],
   "author": "Kerem Noras <kerem@noras.tech>",
-  "main": "dist/storken.js",
+  "main": "lib/storken.js",
   "license": "MIT",
+  "eslintConfig": {
+    "extends": "standard",
+    "parser": "@typescript-eslint/parser",
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "indent": [
+        1
+      ],
+      "space-before-function-paren": [
+        1
+      ],
+      "space-before-blocks": [
+        1
+      ],
+      "no-undef": [
+        0
+      ],
+      "no-use-before-define": [
+        0
+      ]
+    }
+  },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.6",
-    "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "@babel/plugin-transform-modules-commonjs": "^7.9.6",
-    "@babel/plugin-transform-runtime": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
-    "@babel/preset-react": "^7.9.4",
-    "babel-eslint": "^10.1.0",
-    "babel-plugin-loop-optimizer": "^1.4.1",
-    "babel-preset-minify": "^0.5.1",
+    "@types/react": "^17.0.40",
+    "@typescript-eslint/parser": "^5.14.0",
     "eslint": "^7.0.0",
-    "eslint-config-standard": "^14.1.1",
+    "eslint-config-standard": "^16.0.3",
     "eslint-config-standard-react": "^9.2.0",
-    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^26.2.2",
-    "react": "^16.13.1"
-  }
+    "react": "^16.13.1",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {}
 }
