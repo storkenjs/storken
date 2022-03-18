@@ -6,26 +6,40 @@ Storken is a hook-based fully extendable and minimal state manager for React.
 # Installation
  ```sh
 # for yarn
-yarn add storken
+yarn add storken@beta
 
 # for npm
-npm install storken
+npm install storken@beta
  ```
 
 # Getting Started
 
 First, create a store:
 ```js
-import { create as createStore } from 'storken'
+import { createStorken } from 'storken'
 
-const [useStorken, getStorken, setStorken, GlobalStorken] = createStore()
+const { 
+  useStorken, 
+  useLoading, 
+  useUpdate, 
+  usePlugin, 
+  Storken
+} = createStorken()
 ```
 
 `creatStore` will give an array of contains these in order of:
 - A hook function for access the state inside of a **React component**
-- A function for access the state from everywhere.
-- A function for set the state from everywhere.
+- A hook function for access loading state of the main state inside of a **React component**
+- A hook function for access update (getter) function of the state inside of a **React component**
+- A hook function for access plugins of the state inside of a **React component**
 - A class for access the whole Store from everywhere.
+
+Additionally as a **suggestion**, exporting get/set methods from the Storken class may a useful approach.
+
+```js
+export const getStorken = Storken.get
+export const setStorken = Storken.set
+```
 
 # Using the hook
 Using of Storken's hook is designed like using React's built-in `useState` as simply.  
@@ -36,9 +50,11 @@ In fact, if you want to access the state globally from everywhere, almost you do
 
 Except one thing, you should define initial value of the state in `createStore` if you don't want to default value is `undefined`.
 
-```js
-import { create as createStore } from 'storken'
+<details>
+<summary>Example: JS</summary>
 
+```js
+import { createStorken } from 'storken'
 
 const [useStorken] = createStore({
   initialValues: {
@@ -59,6 +75,41 @@ const Counter = () => {
     )
 }
 ```
+</details>
+
+<details>
+<summary>Example: TS</summary>
+
+```ts
+import { createStorken } from 'storken'
+
+
+export const { 
+  useStorken, 
+  useLoading, 
+  usePlugin,
+  Storken: GlobalStorken
+} = createStore({
+  initialValues: {
+    counter: 0 as number
+  }
+})
+
+
+const Counter = () => {
+  const [count, setCount] = useStorken<number>('counter')
+
+    return (
+      <>
+        <div id="count">{count}</div>
+        <button onClick={() => setCount(count + 1)}>Increase value</button>
+        <button onClick={() => setCount(count - 1)}>Decrease value</button>
+      </>
+    )
+}
+```
+</details>
+
 If you want to set value of the state to initial value, just get a `reset` function after the `set` function.
 
 ```js

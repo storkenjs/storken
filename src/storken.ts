@@ -1,7 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-import { createHook } from './useStorken'
-
-export type InitialValue<T = undefined> = T
+import { createHooks } from './useStorken'
 
 export type TPlugin = <TReturn, ConfigType>(storken: typeof Storken, ...config: ConfigType[]) => TReturn
 export type TKey = symbol | string
@@ -28,7 +26,7 @@ export interface IOptions {
   getter?: TGetter,
   setter?: TSetter,
   plugins?: IPlugins,
-  initialValue?: unknown | (<TInitial>() => TInitial),
+  initialValue?: unknown,
   namespace?: string,
   disableGetterOnLoading?: boolean,
   disableSetterOnGetter?: boolean,
@@ -267,7 +265,7 @@ export interface IConfiguration {
     [key: TKey]: IOptions
   },
   initialValues?: {
-    [key: TKey]: InitialValue
+    [key: TKey]: unknown
   }
 }
 
@@ -383,18 +381,27 @@ export class Sky {
   }
 }
 
-export type TCreatedStorken = [
-  hook: TUseStorken,
-  get: <TStorkenValue>(key: string, args: TStorkArgs[] | undefined, obj: boolean) => TStorkenValue | Storken<TStorkenValue>,
-  set: <TStorkenValue>(key: string, value: TStorkenValue, ...args: TStorkArgs[]) => void,
-  GlobalStorken: Sky
-]
+export type THooks = {
+  useStorken: TUseStorken,
+  useLoading: (key: string) => TLoading,
+  useUpdate: (key: string) => ReturnType<TGetter>,
+  usePlugin: (key: string, plugin?: string) => ReturnType<TPlugin>
+}
 
-export const create = (storkenConfig: IConfiguration): TCreatedStorken => {
+export type TCreatedStorken = [
+  // get: <TStorkenValue>(key: string, args: TStorkArgs[] | undefined, obj: boolean) => TStorkenValue | Storken<TStorkenValue>,
+  // set: <TStorkenValue>(key: string, value: TStorkenValue, ...args: TStorkArgs[]) => void,
+  Storken: Sky
+] | THooks
+
+export const createStorken = (storkenConfig: IConfiguration): TCreatedStorken => {
   const Heaven: Sky = new Sky(storkenConfig)
 
-  const useStorken: TUseStorken = createHook(Heaven)
-  return [useStorken, Heaven.get, Heaven.set, Heaven] as TCreatedStorken
+  const hooks: THooks = createHooks(Heaven)
+  return {
+    ...hooks,
+    Storken: Sky
+  } as TCreatedStorken
 }
 
 export default Sky

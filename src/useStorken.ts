@@ -1,12 +1,12 @@
 import { useRef, useState, useEffect, SetStateAction, Dispatch } from 'react'
-import Sky, { TGetter, TKey, TLoading, TPlugin, TStorkArgs, TUseStorken } from './storken'
+import Sky, { TGetter, THooks, TKey, TLoading, TPlugin, TStorkArgs } from './storken'
 
 /**
  * Hook creator.
  * @param {Sky} Sky - Wrapper object which will be used to create and orchestrate for Storkens
  * @returns {function} useStorken - Hook function
  */
-export const createHook = (Sky: Sky): TUseStorken =>
+export const createHooks = (Sky: Sky): THooks => {
   /**
     @param {string} key - Key of the Storken
     @param {...*} args - Arguments which will be used in Storken getter & setter functions.
@@ -52,3 +52,17 @@ export const createHook = (Sky: Sky): TUseStorken =>
 
     return usageObject
   }
+
+  const useLoading = (key: string) => useStorken(key)[3]
+  const useUpdate = (key: string) => useStorken(key)[4]
+  const usePlugin = (key: string, plugin?: string) => plugin
+    ? useStorken(key)?.[5]?.[plugin]
+    : useStorken(key)[5]
+
+  return {
+    useStorken,
+    useLoading,
+    useUpdate,
+    usePlugin
+  }
+}
