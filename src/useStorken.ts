@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, SetStateAction, Dispatch } from 'react'
-import Sky, { TGetter, THooks, TKey, TLoading, TPlugin, TStorkArgs } from './storken'
+import Sky, { Storken, TGetter, THooks, TKey, TLoading, TPlugin, TStorkArgs } from './storken'
 
 /**
  * Hook creator.
@@ -20,12 +20,18 @@ export const createHooks = (Sky: Sky): THooks => {
     update: (...args: TStorkArgs[]) => ReturnType<TGetter> | PromiseLike<ReturnType<TGetter>>,
     plugins?: { [key: TKey]: ReturnType<TPlugin> }
   ] {
-    const stork = useRef(Sky.bundles?.[key] || Sky.create<TStorkenValue, TStorkArgs>(key as string, ...args)).current
+    const stork = useRef<Storken<TStorkenValue>>(Sky.bundles?.[key] || Sky.create<TStorkenValue, TStorkArgs>(key as string, ...args)).current
 
     const [state, listener] = useState<TStorkenValue>(stork.value as TStorkenValue)
     const [loadingState, loadingListener] = useState<TLoading>(stork.opts?.loading)
 
     useEffect(() => stork.listen([state, listener], [loadingState, loadingListener], args), [key, ...args])
+
+    useEffect(() => {
+      if (stork.opts?.getOnlyOnMount) {
+        stork.setFromGetter(...args)
+      }
+    }, [])
 
     type UsageObjectArrNotation = [
       value: typeof state,

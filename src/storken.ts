@@ -9,13 +9,13 @@ export type TLoadingSet = (boolean | ((prevState: boolean | null | undefined) =>
 export type TSet<TValue> = ((TValue | ((prevState: TValue) => TValue)) & TLoadingSet) | undefined
 export type TLoading = boolean | null | undefined
 export type TUseStorken = <TStorkenValue = undefined>(key: string, ...args: TStorkArgs[]) => [
-    value: TStorkenValue,
-    set: Dispatch<SetStateAction<TStorkenValue>>,
-    reset: () => void,
-    loading: TLoading,
-    update: (...args: TStorkArgs[]) => ReturnType<TGetter> | PromiseLike<ReturnType<TGetter>>,
-    plugins?: { [key: TKey]: ReturnType<TPlugin> }
-  ]
+  value: TStorkenValue,
+  set: Dispatch<SetStateAction<TStorkenValue>>,
+  reset: () => void,
+  loading: TLoading,
+  update: (...args: TStorkArgs[]) => ReturnType<TGetter> | PromiseLike<ReturnType<TGetter>>,
+  plugins?: { [key: TKey]: ReturnType<TPlugin> }
+]
 
 export interface IPlugins {
   [name: TKey]: [TPlugin, Exclude<Parameters<TPlugin>, typeof Storken>]
@@ -34,6 +34,7 @@ export interface IOptions {
   getOnce?: boolean,
   setWithSetter?: boolean,
   loading?: boolean,
+  getOnlyOnMount?: boolean
   [extraPluginOption: TKey]: any
 }
 
@@ -64,7 +65,7 @@ export class Storken<TValue> {
   loading?: boolean | null
   getted: boolean
 
-  constructor (options: IOptions, Sky: Sky) {
+  constructor(options: IOptions, Sky: Sky) {
     const { key, args, plugins, ...opts } = options
     this.id = Date.now()
     this.key = key
@@ -139,7 +140,7 @@ export class Storken<TValue> {
     if (value !== this.value) { listener(this.value) }
     if (loading !== this.loading) { loadingListener(this.loading) }
 
-    if (!this.opts?.disableAutoGetter && !this.getted) {
+    if ((!this.opts?.disableAutoGetter && !this.getted) || !this.opts?.getOnlyOnMount) {
       this.setFromGetter(...args)
     }
 
@@ -269,11 +270,11 @@ export interface IConfiguration {
   }
 }
 
-export class Sky {
-  bundles: { }
-  config: IConfiguration
+class Sky {
+  readonly bundles: {}
+  readonly config: IConfiguration
 
-  constructor (config: IConfiguration) {
+  constructor(config: IConfiguration) {
     this.bundles = {}
     this.config = config
   }
@@ -289,8 +290,8 @@ export class Sky {
         ? this.config?.initialValues?.[key]
         : this.config?.options?.initialValue
     },
-    this.config?.options || {},
-    this.config.storkenOptions?.[key] || {}
+      this.config?.options || {},
+      this.config.storkenOptions?.[key] || {}
     )
     this.bundles[key] = new Storken<TStorkenValue>(config as IOptions, this) as Storken<TStorkenValue>
 
@@ -388,20 +389,18 @@ export type THooks = {
   usePlugin: (key: string, plugin?: string) => ReturnType<TPlugin>
 }
 
-export type TCreatedStorken = [
-  // get: <TStorkenValue>(key: string, args: TStorkArgs[] | undefined, obj: boolean) => TStorkenValue | Storken<TStorkenValue>,
-  // set: <TStorkenValue>(key: string, value: TStorkenValue, ...args: TStorkArgs[]) => void,
+export type TCreatedStorken = THooks & {
   Storken: Sky
-] | THooks
+}
 
 export const createStorken = (storkenConfig: IConfiguration): TCreatedStorken => {
   const Heaven: Sky = new Sky(storkenConfig)
 
   const hooks: THooks = createHooks(Heaven)
   return {
-    ...hooks,
-    Storken: Sky
-  } as TCreatedStorken
+    ...hooks as THooks,
+    Storken: Heaven as Sky
+  }
 }
 
 export default Sky
