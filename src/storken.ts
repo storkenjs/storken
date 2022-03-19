@@ -274,7 +274,7 @@ class Sky {
   readonly bundles: {}
   readonly config: IConfiguration
 
-  constructor(config: IConfiguration) {
+  constructor(config: IConfiguration = {}) {
     this.bundles = {}
     this.config = config
   }
@@ -393,7 +393,7 @@ export type TCreatedStorken = THooks & {
   Storken: Sky
 }
 
-export const createStorken = (storkenConfig: IConfiguration): TCreatedStorken => {
+export const createStorken = (storkenConfig?: IConfiguration): TCreatedStorken => {
   const Heaven: Sky = new Sky(storkenConfig)
 
   const hooks: THooks = createHooks(Heaven)
