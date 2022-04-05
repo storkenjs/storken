@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 import { createHooks } from './useStorken'
 
-export type TPlugin = <TReturn, ConfigType>(storken: typeof Storken, ...config: ConfigType[]) => TReturn
+export type TPlugin = <TValue, TReturn, ConfigType>(storken: Storken<TValue>, ...config: ConfigType[]) => TReturn extends Promise<infer T> ? T : TReturn
 export type TKey = symbol | string
 type StorkenParameters<T extends (...args: any) => any> = T extends (stork: typeof Storken, ...args: infer P) => any ? P : never
 export type TReactState<S> = [S, Dispatch<SetStateAction<S>>]
@@ -18,7 +18,7 @@ export type TUseStorken = <TStorkenValue = undefined>(key: string, ...args: TSto
 ]
 
 export interface IPlugins {
-  [name: TKey]: [TPlugin, Exclude<Parameters<TPlugin>, typeof Storken>]
+  [name: TKey]: [TPlugin, Exclude<Parameters<TPlugin>, typeof Storken>] | TPlugin
 }
 
 export interface IOptions {
@@ -54,7 +54,7 @@ export class Storken<TValue> {
   opts: IOptions
   value: TValue
   Store: Sky
-  plugins: IPlugins
+  plugins: { [key: TKey]: ReturnType<TPlugin> | [ReturnType<TPlugin>] } = {}
   namespace: string = 'storken::'
   listeners: Dispatch<SetStateAction<TValue>>[] = []
   loadingListeners: Dispatch<SetStateAction<boolean | null | undefined>>[] = []
@@ -78,13 +78,13 @@ export class Storken<TValue> {
     }
 
     if (plugins) {
-      this.plugins = (Object.keys(plugins) as Array<keyof typeof plugins>).reduce((obj, key) => {
+      this.plugins = Object.keys(plugins).reduce((obj, key) => {
         const plugin = plugins[key]
         const [entrypoint, ...config] = Array.isArray(plugin)
           ? plugin
           : [plugin]
 
-        obj[key] = entrypoint(this as unknown as typeof Storken, ...config)
+        obj[key] = entrypoint(this, ...config)
         return obj
       }, <IPlugins>{})
     }
