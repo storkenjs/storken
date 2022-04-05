@@ -40,8 +40,6 @@ export interface IOptions {
 
 export type TStorkArgs = StorkenParameters<TGetter> | StorkenParameters<TSetter> | Array<[]> | undefined
 
-export type TEventFunction = (<TReturn, TArgs>(...args: TArgs[]) => TReturn)
-
 export type TSetOptions = {
   disableSetter?: boolean,
   force?: boolean
@@ -59,7 +57,7 @@ export class Storken<TValue> {
   listeners: Dispatch<SetStateAction<TValue>>[] = []
   loadingListeners: Dispatch<SetStateAction<boolean | null | undefined>>[] = []
   eventListeners: {
-    [event: string]: TEventFunction[]
+    [event: string]: Function[]
   } = {}
 
   loading?: boolean | null
@@ -90,11 +88,11 @@ export class Storken<TValue> {
     }
   }
 
-  on = (name: string, func: TEventFunction): void => {
+  on = (name: string, func: Function): void => {
     if (this?.eventListeners?.[name]) {
-      this.eventListeners[name].push(<TEventFunction>func)
+      this.eventListeners[name].push(func)
     } else {
-      this.eventListeners[name] = [<TEventFunction>func]
+      this.eventListeners[name] = [func]
     }
   }
 
