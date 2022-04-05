@@ -10,7 +10,7 @@
     "type": "git"
   },
   "name": "storken",
-  "version": "2.1.0-beta.8",
+  "version": "2.1.0-ts.8",
   "description": "Hook based extendable minimal state manager for React.",
   "keywords": [
     "state",
