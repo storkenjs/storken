@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 import { createHooks } from './useStorken'
 
-export type TPlugin = <TValue, TReturn, ConfigType>(storken: Storken<TValue>, ...config: ConfigType[]) => TReturn extends Promise<infer T> ? T : TReturn
+export type TPlugin = (storken: Storken<never>, ...config: never[]) => any
 export type TKey = symbol | string
 type StorkenParameters<T extends (...args: any) => any> = T extends (stork: typeof Storken, ...args: infer P) => any ? P : never
 export type TReactState<S> = [S, Dispatch<SetStateAction<S>>]
@@ -18,7 +18,7 @@ export type TUseStorken = <TStorkenValue = undefined>(key: string, ...args: TSto
 ]
 
 export interface IPlugins {
-  [name: TKey]: [TPlugin, Exclude<Parameters<TPlugin>, typeof Storken>] | TPlugin
+  [name: TKey]: [TPlugin, any] | TPlugin
 }
 
 export interface IOptions {
@@ -82,7 +82,7 @@ export class Storken<TValue> {
           ? plugin
           : [plugin]
 
-        obj[key] = entrypoint(this, ...config)
+        obj[key] = entrypoint(this as never, ...config as never[])
         return obj
       }, <IPlugins>{})
     }
