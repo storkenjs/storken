@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 import { createHooks } from './useStorken'
 
-export type TPlugin = (storken: Storken<never>, ...config: never[]) => any
+export type TPlugin = (storken: Storken<any>, ...config: any[]) => any
 export type TKey = symbol | string
 type StorkenParameters<T extends (...args: any) => any> = T extends (stork: typeof Storken, ...args: infer P) => any ? P : never
 export type TReactState<S> = [S, Dispatch<SetStateAction<S>>]
