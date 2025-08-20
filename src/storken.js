@@ -196,7 +196,7 @@ export class Storken {
     }
 
     if (typeof this.opts?.setter === 'function' && !opts?.disableSetter) {
-      this.load(null)
+      this.load(true)
       Promise.resolve(
         typeof this.opts.setter === 'function'
           ? typeof this.opts.setter?.then === 'function'

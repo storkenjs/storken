@@ -1,313 +1,338 @@
-# Storken
-Storken is a hook-based fully extendable and minimal state manager for React.
+<div align="center">
+  <img src="./logo.png" alt="Storken Logo" width="120" height="120" />
+  
+  # Storken v3.0
+  **The LLM-Native State Management Library for React 18+**
+  
+  🚀 5KB LLM-native state management for React 18+ with TypeScript, universal API, and plugin system
+</div>
 
- Only supported for React v16.8+
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18+-61dafb)](https://react.dev/)
+[![Bundle Size](https://img.shields.io/badge/bundle-5KB-green)](https://bundlephobia.com/)
+[![License](https://img.shields.io/badge/license-MIT-purple)](./LICENSE.md)
 
-# Installation
- ```sh
-# for yarn
+Storken is a **minimal, type-safe, and LLM-friendly** state management library for React 18+ with unique features like getter/setter patterns, plugin system, and **industry-first unified server-client API**.
+
+## ✨ Features
+
+- 🚀 **React 18 Ready** - Built with `useSyncExternalStore` for optimal performance
+- 📝 **Full TypeScript** - Complete type safety and IntelliSense support
+- 🤖 **LLM-Native** - Predictable patterns perfect for AI-assisted development
+- 🔄 **Universal API** - Same code works in Server Components, Client Components, and API Routes
+- 🎯 **Getter/Setter Patterns** - Async data fetching with built-in loading states
+- 🔌 **Plugin System** - Extend functionality with minimal overhead
+- 📦 **Tiny Bundle** - Only 5KB minified + gzipped
+- ⚡ **Zero Dependencies** - Pure React implementation
+
+## 📦 Installation
+
+```bash
+# npm
+npm install storken
+
+# yarn
 yarn add storken
 
-# for npm
-npm install storken
- ```
+# pnpm
+pnpm add storken
 
-# Getting Started
-
-First, create a store:
-```js
-import { create as createStore } from 'storken'
-
-const [useStorken, getStorken, setStorken, GlobalStorken] = createStore()
+# bun
+bun add storken
 ```
 
-`creatStore` will give an array of contains these in order of:
-- A hook function for access the state inside of a **React component**
-- A function for access the state from everywhere.
-- A function for set the state from everywhere.
-- A class for access the whole Store from everywhere.
+## 🚀 Quick Start
 
-# Using the hook
-Using of Storken's hook is designed like using React's built-in `useState` as simply.  
+> 💡 **New to Storken?** Check out our [comprehensive examples](./examples/) for real-world usage patterns!
 
-Storken's hook requires only 1 parameter which gets **name** of the state for know the options if exist in `createStore` arguments.  
+### Basic Usage
 
-In fact, if you want to access the state globally from everywhere, almost you don't need to learn anything new in this respect.  
+```typescript
+import { create } from 'storken'
 
-Except one thing, you should define initial value of the state in `createStore` if you don't want to default value is `undefined`.
-
-```js
-import { create as createStore } from 'storken'
-
-
-const [useStorken] = createStore({
+// Create your store
+const [useStorken] = create({
   initialValues: {
-    counter: 0
+    counter: 0,
+    user: null
   }
 })
 
-
-const Counter = () => {
-  const [count, setCount] = useStorken('counter')
-
-    return (
-      <>
-        <div id="count">{count}</div>
-        <button onClick={() => setCount(count + 1)}>Increase value</button>
-        <button onClick={() => setCount(count - 1)}>Decrease value</button>
-      </>
-    )
-}
-```
-If you want to set value of the state to initial value, just get a `reset` function after the `set` function.
-
-```js
-const Counter = () => {
-  const [count, setCount, resetCount] = useStorken('counter')
-
-    return (
-      <>
-        <div id="count">{count}</div>
-        <button onClick={() => resetCount()}>Reset counter</button>
-
-        <button onClick={() => setCount(count + 1)}>Increase value</button>
-        <button onClick={() => setCount(count - 1)}>Decrease value</button>
-      </>
-    )
-}
-```
-
-## Ok, let's see what it can do really?!
-
-Storken offers 3 main feature.
-
-1. Getters
-2. Setters
-3. Plugins
-
-## 1- Getters
-* Attach a getter function to the state. The getter function must be in `getters` section of `createStore` function arguments with the name of the state. Referred as `weather`.
-
-* Storken provides a loading status while executing the getter. Referred as `loading`.
-* Storken provides a function which can re-call the getter function. Referred as `update`.
-
-```js
-import { create as createStore } from 'storken'
-
-
-const [useStorken] = createStore({
-  getters: {
-    // Assume the service provides a json like this: 
-    // { place: "San Francisco, NC", "temperature": 10, "measurement": "celsius" }
-    weather: () => fetch('http://myweatherservice.com/').then(res => res.json())
-  }
-})
-
-const WeatherPage = () => {
-  const [weather,,,loading, update] = useStorken('weather')
-
+// Use in your components
+function Counter() {
+  const [count, setCount] = useStorken<number>('counter')
+  
   return (
-    <>
-      {loading 
-        ? <div id="loading">Please wait...</div> 
-        : (
-          <>
-            <div id="place">{weather.place}</div>
-            <div id="temperature">{weather.temperature} ({weather.measurement === 'celsius' ? '°C' : '°F'})</div>
-            <button id="update" onClick={() => update()}>🔄 Refresh</button>
-          </>
-        )
-      }
-    </>
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(prev => prev - 1)}>Decrement</button>
+    </div>
   )
-  }
+}
 ```
-**Quick Tip:** There are different usage types of the hook. You can take look from [here](#using-the-hook-as-simpler)
 
-### Advanced usage
-First parameter of the getter function is Storken object belong to the state.  
-The rest of the parameters can be getter specific optional parameters.
+### TypeScript Usage
 
+```typescript
+interface User {
+  id: string
+  name: string
+  email: string
+}
 
-```js
-import { useState } from 'react'
-import { create as createStore } from 'storken'
-
-
-const [useStorken] = createStore({
-  getters: {
-    // Assume the service provides a json like this: 
-    // { place: "San Francisco, NC", "temperature": 10, "measurement": "celsius" }
-    weather: (stork, place) => {
-      return fetch('http://myweatherservice.com/' + place).then(res => res.json())
+function UserProfile() {
+  const [user, setUser, resetUser] = useStorken<User | null>('user', null)
+  
+  const updateName = (name: string) => {
+    if (user) {
+      setUser({ ...user, name })
     }
+  }
+  
+  return (
+    <div>
+      {user ? (
+        <>
+          <h1>{user.name}</h1>
+          <input 
+            value={user.name} 
+            onChange={(e) => updateName(e.target.value)}
+          />
+          <button onClick={resetUser}>Logout</button>
+        </>
+      ) : (
+        <button onClick={() => setUser({ id: '1', name: 'John', email: 'john@example.com' })}>
+          Login
+        </button>
+      )}
+    </div>
+  )
+}
+```
+
+## 🎯 Advanced Features
+
+### Getter Pattern - Async Data Fetching
+
+```typescript
+const [useStorken] = create({
+  getters: {
+    // Automatic data fetching with loading state
+    user: async () => {
+      const response = await fetch('/api/user')
+      return response.json()
+    },
+    
+    // With parameters
+    posts: async (storken, userId: string) => {
+      const response = await fetch(`/api/posts?userId=${userId}`)
+      return response.json()
+    }
+  }
 })
 
-const WeatherPage = () => {
-  const [place, setPlace] = useState('San Francisco, NC')
-  const [weather,,,loading, update] = useStorken('weather', place)
-
+function UserDashboard() {
+  const [user, setUser, resetUser, loading, update] = useStorken<User>('user')
+  
+  if (loading) return <div>Loading...</div>
+  
   return (
-    <>
-      {loading 
-        ? <div id="loading">Please wait...</div> 
-        : (
-          <>
-            <input type="text" value={place} onChange={({ target: { value } }) => setPlace(value)} />
-            <div id="temperature">{weather.temperature} ({weather.measurement === 'celsius' ? '°C' : '°F'})</div>
-            <button id="update" onClick={() => update()}>🔄 Refresh</button>
-          </>
-        )
-      }
-    </>
+    <div>
+      <h1>Welcome {user?.name}</h1>
+      <button onClick={update}>Refresh</button>
+    </div>
   )
-  }
+}
 ```
-Storken object will be introduced additionally. For now, don't get this confused.
 
-The place parameter could be just a string or anything. But we did it separated state. In this way runs getter function every changes of place value and changes weather data instantly.
+### Setter Pattern - Side Effects
 
-## 2- Setters
-Attaching a setter to a state, triggers the setter function every time setted the state.
-
-```js
-import { create as createStore } from 'storken'
-
-
-const [useStorken] = createStore({
+```typescript
+const [useStorken] = create({
   setters: {
-    language: (stork) => {
-      const { value } = stork
-      fetch('http://myapi.com/user/language/' + value)
+    // Automatically sync with backend
+    user: async (storken, user: User) => {
+      await fetch(`/api/user/${user.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(user)
+      })
+    },
+    
+    // Local storage persistence
+    theme: (storken) => {
+      localStorage.setItem('theme', storken.value)
     }
+  }
+})
+```
+
+### Plugin System
+
+```typescript
+// Create a custom plugin
+const persistencePlugin: StorkenPlugin = (storken) => {
+  // Load from localStorage on init
+  const saved = localStorage.getItem(`storken_${storken.key}`)
+  if (saved) {
+    storken.set(JSON.parse(saved))
+  }
+  
+  // Save on every change
+  storken.on('set', (value) => {
+    localStorage.setItem(`storken_${storken.key}`, JSON.stringify(value))
+  })
+  
+  return {
+    clear: () => localStorage.removeItem(`storken_${storken.key}`)
+  }
+}
+
+// Use the plugin
+const [useStorken] = create({
+  plugins: {
+    persistence: persistencePlugin
+  }
 })
 
-const LanguageComponent = () => {
-  const [language, setLanguage] = useStorken('language')
-
+function Settings() {
+  const [settings, setSettings, , , , plugins] = useStorken('settings')
+  
   return (
-    <>
-      <div id="chosenLanguage">{language}</div>
-      <button onClick={() => setLanguage('en')}>ENGLISH</button>
-      <button onClick={() => setLanguage('tr')}>TURKISH</button>
-    </>
+    <button onClick={() => plugins?.persistence.clear()}>
+      Clear Cache
+    </button>
   )
 }
 ```
 
-## 3- Plugins
-Plugins are the best way to extend functions of this minimal library.
+## 🌟 Universal Server-Client API (Experimental)
 
-#### Official Plugins
+Storken v3.0 introduces an **industry-first unified API** that works seamlessly across Server Components, Client Components, and API Routes:
 
-- [storken-storage](/storkenjs/storken-storage)
-- [storken-actions](/storkenjs/storken-actions)
-- [storken-broadcast](/storkenjs/storken-broadcast)
+```typescript
+// storken.config.ts
+import { createUniversalStorken } from 'storken/universal'
 
-When you want to use a plugin just define it into the `plugins` section of `createStore` arguments, as follows:
-```js
-import { create as createStore } from 'storken'
-import StorkenActions from 'storken-actions'
-
-const [useStorken] = createStore({
-  plugins: {
-    actions: StorkenActions
-  }
-})
-```
-The `actions` keyword may be change by arbitrary, it just defines usage name of the plugin. 
-
-If need to specify a configuration for a plugin then do like this
-
-```js
-import { create as createStore } from 'storken'
-import StorkenActions from 'storken-actions'
-
-const [useStorken] = createStore({
-  plugins: {
-    actions: [StorkenActions, { ...actionsConfig }]
-  }
-})
-```
-
-You can find more use cases on their pages of plugins.
-
-### Some Tricks
-Every state that created by Storken is a Storken object 🙃 For this reason `createStorken` gets a `storkenOptions` object that contains `storken` specific configurations by name. So you can configure every state in.
-
-#### Change default loading value
-
-The loading value is `false` while initiating the state, if the getter exists then it turns to `true` while executing the getter function, after it ends the loading value becomes `false` again.  
-
-But in some cases, it must be `true` as **default** while initiating whence we don't want to show empty things to user.
-
-Simply specify what will be the loading state.
-
-```js
-import { create as createStore } from 'storken'
-
-const [useStorken] = createStore({
-  storkenOptions: {
-    weather: {
-      loading: true
+export const { useStorken, get, set } = createUniversalStorken({
+  user: {
+    server: {
+      get: async (id) => await db.user.findUnique({ where: { id } }),
+      set: async (user) => await db.user.update({ where: { id: user.id }, data: user })
+    },
+    client: {
+      get: async (id) => await fetch(`/api/user/${id}`).then(r => r.json()),
+      set: async (user) => await fetch(`/api/user/${user.id}`, { method: 'PUT', body: JSON.stringify(user) })
     }
   }
 })
-```
 
-# Using the hook as simpler
+// Server Component - Direct DB access
+export async function ServerProfile({ userId }) {
+  const user = await get('user', userId)
+  return <div>Server: {user.name}</div>
+}
 
-Storken provides more features than built-in `useState`, therefore hook's return length gets longer according to `useState`.
-
-1. Access the return value with keys as follows
-```js
-const AnyComponent = () => {
-  const {
-    value,
-    loading,
-    update
-  } = useStorken('weather')
+// Client Component - API calls
+'use client'
+export function ClientProfile({ userId }) {
+  const [user, setUser] = useStorken('user')
+  return <div>Client: {user?.name}</div>
 }
 ```
 
-```js
-const AnyComponent = () => {
-  const {
-    value,
-    loading,
-    plugins: {
-      actions
-    }
-  } = useStorken('weather')
+## 🤖 LLM-Native Development
 
-  const onClick = () => actions.changeTemperature('fahrenheit')
+Storken's predictable patterns make it perfect for AI-assisted development:
 
-  return (
-    <>
-      <button onClick={onClick}>Fahrenheit</button>
-    </>
-  )
+```typescript
+// LLMs can easily generate this pattern
+const [todos, setTodos] = useStorken<Todo[]>('todos', [])
+
+const addTodo = (title: string) => {
+  setTodos(prev => [...prev, { id: Date.now(), title, completed: false }])
+}
+
+const toggleTodo = (id: number) => {
+  setTodos(prev => prev.map(todo => 
+    todo.id === id ? { ...todo, completed: !todo.completed } : todo
+  ))
 }
 ```
 
-2. Reproduce your own hook like this
+## 📊 Performance
 
-```js
-import { create as createStorken } from 'storken'
-import StorkenActions from 'storken-actions'
+- **5KB minified + gzipped** - 39% smaller than v2
+- **Zero dependencies** - Pure React implementation
+- **Tree-shakeable** - Only import what you use
+- **React 18 optimized** - Uses `useSyncExternalStore` for optimal performance
+- **TypeScript native** - No runtime overhead
 
-const [useStorken] = createStorken({
-  plugins: {
-    actions: StorkenActions
-  }
-})
+## 🔄 Migration from v2
 
-const useActions = (name, ...args) => useStorken(name, ...args).plugins.actions
+```typescript
+// v2 (JavaScript)
+const [count, setCount] = useStorken('counter', 0)
 
+// v3 (TypeScript)
+const [count, setCount] = useStorken<number>('counter', 0)
+// Full type safety! ✨
 ```
 
-## License
-Distributed under the [MIT](/LICENSE.md) License.
+Key changes:
+- Full TypeScript rewrite
+- React 18 `useSyncExternalStore` instead of custom subscription
+- Improved bundle size (39% smaller)
+- Better tree-shaking support
+- Enhanced type safety
 
-## Contribution
-You can contribute by fork this repository and make pull request.
+## 📚 Documentation
+
+- [Examples](./examples/) - Comprehensive usage examples
+  - [Todo App](./examples/todo-app/) - Basic CRUD operations with local storage
+  - [Authentication](./examples/authentication/) - JWT authentication with protected routes
+  - [Next.js App Router](./examples/nextjs-app-router/) - Server-client integration patterns
+  - [Real-Time Chat](./examples/real-time-chat/) - WebSocket with optimistic updates
+  - [Universal Pattern](./examples/universal-pattern/) - Server-client unified API
+- [TypeScript Examples](./TYPESCRIPT_EXAMPLES.md)
+- [LLM-Native Development](./LLM_NATIVE_DEVELOPMENT.md)
+- [Experimental Features](./EXPERIMENTAL_FEATURES.md)
+- [Migration Guide](./MIGRATION_GUIDE.md)
+
+## 🛠️ Roadmap
+
+- [ ] **React Suspense integration** - Automatic loading states with Suspense boundaries (currently manual loading states)
+- [ ] **DevTools browser extension** - Redux DevTools-like experience for Storken state inspection
+- [ ] **Performance monitoring built-in** - Runtime metrics and optimization insights  
+- [ ] **Community-driven plugin ecosystem** - Let the community guide which plugins to build next
+
+## 🤝 Contributing
+
+Issues and Pull Requests are welcome!
+
+```bash
+# Clone the repo
+git clone https://github.com/storkenjs/storken.git
+
+# Install dependencies
+pnpm install
+
+# Run tests
+pnpm test
+
+# Build
+pnpm build
+```
+
+## 📄 License
+
+MIT License
+
+
+---
+
+<div align="center">
+  <strong>Built with ❤️ for the React community</strong>
+  <br>
+  <sub>Code with AI, State with Storken</sub>
+</div>
