@@ -1,6 +1,6 @@
 {
   "name": "storken",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "🚀 5KB LLM-native state management for React 18+ with TypeScript, universal API, and plugin system",
   "keywords": [
     "react",
