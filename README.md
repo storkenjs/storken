@@ -7,6 +7,7 @@
   🚀 5KB LLM-native state management for React 18+ with TypeScript, universal API, and plugin system
 </div>
 
+[![npm version](https://img.shields.io/npm/v/storken.svg)](https://www.npmjs.com/package/storken)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61dafb)](https://react.dev/)
 [![Bundle Size](https://img.shields.io/badge/bundle-5KB-green)](https://bundlephobia.com/)
